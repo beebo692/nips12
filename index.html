@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="Not All Features Are Created Equal: Mechanistic Interpretability of Vision-Language-Action Models.">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Not All Features Are Created Equal | VLA Interpretability</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Google+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦾</text></svg>">
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation">
+  <div class="container">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="#" style="font-weight: 700; font-size: 1.1rem;">
+        VLA Interp
+      </a>
+      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="mainNavbar">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
+    <div id="mainNavbar" class="navbar-menu">
+      <div class="navbar-start">
+        <a class="navbar-item" href="#abstract">Abstract</a>
+        <a class="navbar-item" href="#method">Method</a>
+        <a class="navbar-item" href="#findings">Key Findings</a>
+        <a class="navbar-item" href="#results">Results</a>
+        <a class="navbar-item" href="#models">Models</a>
+        <a class="navbar-item" href="#action-atlas">Action Atlas</a>
+        <a class="navbar-item" href="tutorial.html">Setup &amp; Tutorial</a>
+      </div>
+      <div class="navbar-end">
+        <a class="navbar-item" href="https://action-atlas.com" target="_blank" style="color: var(--accent-light) !important;">
+          <span class="icon"><i class="fas fa-external-link-alt"></i></span>
+          <span>Live Demo</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section class="hero is-large hero-gradient" style="padding-top: 52px; position: relative; overflow: hidden;">
+  <video autoplay muted loop playsinline style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; opacity: 0.35;">
+    <source src="./static/videos/hero_bg.mp4" type="video/mp4">
+  </video>
+  <div class="hero-body" style="position: relative; z-index: 1;">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+
+          <h1 class="title is-1 publication-title" style="margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+            Not All Features Are Created Equal
+            <a href="https://action-atlas.com" target="_blank" style="display: inline-flex; text-decoration: none;" title="Launch Action Atlas">
+              <svg width="48" height="48" viewBox="0 0 64 64" class="robot-wave" style="cursor: pointer;">
+                <line x1="32" y1="4" x2="32" y2="14" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" />
+                <circle cx="32" cy="3" r="2.5" fill="#ef4444" class="robot-antenna-blink" />
+                <rect x="20" y="14" width="24" height="18" rx="5" fill="#1e293b" stroke="#475569" stroke-width="1.5" />
+                <circle cx="28" cy="23" r="3" fill="#e74c3c" class="robot-eye" />
+                <circle cx="36" cy="23" r="3" fill="#e74c3c" class="robot-eye" />
+                <circle cx="29" cy="22" r="1" fill="white" opacity="0.7" />
+                <circle cx="37" cy="22" r="1" fill="white" opacity="0.7" />
+                <path d="M27 28 Q32 31 37 28" stroke="#94a3b8" stroke-width="1.5" fill="none" stroke-linecap="round" />
+                <rect x="22" y="34" width="20" height="14" rx="3" fill="#1e293b" stroke="#475569" stroke-width="1.5" />
+                <circle cx="32" cy="41" r="2" fill="#ef4444" opacity="0.8" class="robot-antenna-blink" />
+                <rect x="12" y="36" width="8" height="4" rx="2" fill="#334155" />
+                <circle cx="12" cy="38" r="2.5" fill="#475569" />
+                <g class="robot-arm-wave">
+                  <rect x="44" y="34" width="8" height="4" rx="2" fill="#334155" />
+                  <circle cx="52" cy="36" r="2.5" fill="#475569" />
+                  <path d="M54 34 L56 30 M54 34 L57 33 M54 34 L56 37" stroke="#f97316" stroke-width="1.5" stroke-linecap="round" />
+                </g>
+                <rect x="25" y="49" width="5" height="8" rx="2" fill="#334155" />
+                <rect x="34" y="49" width="5" height="8" rx="2" fill="#334155" />
+                <rect x="23" y="55" width="9" height="4" rx="2" fill="#475569" />
+                <rect x="32" y="55" width="9" height="4" rx="2" fill="#475569" />
+              </svg>
+            </a>
+          </h1>
+          <h2 class="subtitle is-4" style="margin-bottom: 2rem; font-weight: 400;">
+            A Mechanistic Study of Vision-Language-Action Models
+          </h2>
+
+          <div class="is-size-5 publication-authors" style="margin-bottom: 0.5rem;">
+            <span class="author-block" style="color: rgba(255,255,255,0.9);">Anonymous Authors</span>
+          </div>
+          <div class="is-size-6 publication-authors" style="margin-bottom: 2rem;">
+            <span class="author-block" style="color: rgba(255,255,255,0.55); font-style: italic;">Affiliations withheld for double-blind review</span>
+          </div>
+
+          <!-- Links (anonymized: only Action Atlas + Codebase) -->
+          <div class="publication-links">
+            <span class="link-block">
+              <a href="https://action-atlas.com" class="button is-normal is-rounded is-accent" target="_blank">
+                <span class="icon"><i class="fas fa-globe"></i></span>
+                <span>Action Atlas</span>
+              </a>
+            </span>
+            <span class="link-block">
+              <a href="https://anonymous.4open.science/r/33987-EE4D" target="_blank" class="external-link button is-normal is-rounded is-dark">
+                <span class="icon"><i class="fas fa-code"></i></span>
+                <span>Codebase</span>
+              </a>
+            </span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== STATS BAR ===== -->
+<section class="section" style="padding: 2rem 0;">
+  <div class="container is-max-desktop">
+    <div class="stats-bar">
+      <div class="stat-item">
+        <div class="stat-number">6</div>
+        <div class="stat-label">VLA Architectures</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">420,000+</div>
+        <div class="stat-label">Rollout Episodes</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">520+</div>
+        <div class="stat-label">SAE Checkpoints</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">79</div>
+        <div class="stat-label">Manipulation Concepts</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">4</div>
+        <div class="stat-label">Benchmarks</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== ABSTRACT ===== -->
+<section class="section section-alt" id="abstract">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3 section-title has-text-centered">Abstract</h2>
+        <div class="content has-text-justified" style="margin-top: 2rem; font-size: 1.05rem; line-height: 1.8; color: var(--text-mid);">
+          <p>
+            A fine-tuned Vision-Language-Action (VLA) policy will pick up the alphabet soup and place it in the basket on demand, then drop the soup off the table when an evaluator shifts the basket five centimeters left. We use activation injection to ask what the policy is doing: inject task A's activations into task B's scene at the action expert, and <strong>&pi;0.5 executes task A's motor trajectory in 99.6% of episodes (n = 1,968); X-VLA does so in 99.8%</strong>. The injected program is bound to <strong>absolute workspace coordinates rather than the visible scene</strong>, which mechanistically explains the perturbation brittleness reported in concurrent benchmark work. The same intervention framework applied across six VLAs (&pi;0.5, OpenVLA-OFT, X-VLA, SmolVLA, GR00T&nbsp;N1.5, and ACT as a language-free control) on LIBERO, MetaWorld, SimplerEnv, and ALOHA over <strong>420,000+ rollouts</strong> surfaces three further findings: language is encoded by every architecture yet behaviorally ignored when vision uniquely identifies the goal; SAE pooling preference splits along architecture lines (&pi;0.5 per-token, X-VLA mean-pool, SmolVLA indifferent); and pathway specialization replicates wherever expert and VLM pathways are separable. SmolVLA's interleaved fusion attenuates the headline to 52.1% LIBERO override, scoping universality. We release <a href="https://action-atlas.com" target="_blank"><strong>Action Atlas</strong></a>, an interactive feature-exploration platform covering all 520+ trained SAEs and 79 identified concepts.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== METHOD ===== -->
+<section class="section" id="method">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 section-title has-text-centered">Method</h2>
+    <p class="has-text-centered" style="color: var(--text-mid); margin-bottom: 2.5rem; margin-top: 1rem;">
+      Per-token Sparse Autoencoders + causal interventions for VLA mechanistic interpretability
+    </p>
+
+    <!-- Methodology Figure -->
+    <div class="figure-container" style="margin-bottom: 2rem;">
+      <img src="./static/images/fig_system_arch.png" alt="Methodology overview">
+      <p class="figure-caption">
+        Methodology overview. Top: activations are recorded from VLA backbone and action expert layers during rollout episodes, then replayed under counterfactual conditions (null prompts, cross-task scenes) to establish causal relationships via behavioral change. Middle: per-token SAEs decompose layer activations into sparse features. Bottom: features are clustered, searched, and causally validated through ablation and steering experiments, with results visualized in Action Atlas.
+      </p>
+    </div>
+
+    <div class="columns">
+      <div class="column is-half">
+        <div class="content-card" style="height: 100%;">
+          <h4 style="color: var(--primary); font-weight: 700; margin-bottom: 1rem;">
+            <span class="icon" style="color: var(--accent);"><i class="fas fa-brain"></i></span>
+            Sparse Autoencoders (SAEs)
+          </h4>
+          <p style="color: var(--text-mid); line-height: 1.7;">
+            We train <strong>520+ TopK SAEs</strong> (k=64) across all six models with 4&ndash;8&times; expansion. Each action token is processed independently to preserve temporal structure. Feature importance is scored via <strong>frequency-weighted contrastive selection</strong> (Cohen's d &times; top-k frequency), recovering 79 aligned manipulation concepts.
+          </p>
+        </div>
+      </div>
+      <div class="column is-half">
+        <div class="content-card" style="height: 100%;">
+          <h4 style="color: var(--primary); font-weight: 700; margin-bottom: 1rem;">
+            <span class="icon" style="color: var(--accent);"><i class="fas fa-syringe"></i></span>
+            Activation Injection &amp; Causal Interventions
+          </h4>
+          <p style="color: var(--text-mid); line-height: 1.7;">
+            We test causality with four injection conditions: <strong>null injection</strong> (correct prompt to empty string), <strong>same-scene steering</strong> (redirect to alternate targets), <strong>cross-task injection</strong> (transfer across visual scenes), and <strong>random-direction</strong> (norm-matched control: 22% source behavior vs. 99.6% directed).
+          </p>
+          <p style="color: var(--text-mid); line-height: 1.7; margin-top: 0.75rem;">
+            <strong>Concept ablation</strong> zeros out specific SAE features during live rollouts, while <strong>feature steering</strong> scales feature activations by &alpha; to amplify or suppress encoded behaviors.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="columns" style="margin-top: 2rem;">
+      <div class="column is-half">
+        <div class="content-card" style="height: 100%;">
+          <h4 style="color: var(--primary); font-weight: 700; margin-bottom: 1rem;">
+            <span class="icon" style="color: var(--accent);"><i class="fas fa-chart-line"></i></span>
+            Linear Probes
+          </h4>
+          <p style="color: var(--text-mid); line-height: 1.7;">
+            Ridge regression probes recover prompt-category labels at <strong>&gt; 99% accuracy</strong> from the residual stream of every model tested. A <strong>projection operator test</strong> confirms causality: projecting out the probe direction drops downstream R&#178; to chance.
+          </p>
+        </div>
+      </div>
+      <div class="column is-half">
+        <div class="content-card" style="height: 100%;">
+          <h4 style="color: var(--primary); font-weight: 700; margin-bottom: 1rem;">
+            <span class="icon" style="color: var(--accent);"><i class="fas fa-eye"></i></span>
+            Counterfactual Prompting
+          </h4>
+          <p style="color: var(--text-mid); line-height: 1.7;">
+            We test language grounding with <strong>6 prompt variations</strong> across <strong>11,226 counterfactual episodes</strong> spanning all five language-capable VLAs: baseline, null (empty string), negation, motor commands, object swap, and mid-episode temporal switches. SmolVLA is additionally evaluated across MetaWorld's four difficulty tiers.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== KEY FINDINGS ===== -->
+<section class="section" id="findings">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 section-title has-text-centered">Key Findings</h2>
+    <p class="has-text-centered" style="color: var(--text-mid); margin-bottom: 2.5rem; margin-top: 1rem;">
+      A five-step argument across six VLA architectures
+    </p>
+
+    <div class="findings-list">
+      <div class="finding-item">
+        <div class="finding-marker">1</div>
+        <div>
+          <h4>Visual Context Dominates Action Generation</h4>
+          <p>Replacing the prompt with an empty string and replaying the image stream from a different episode restores actions to cosine &ge; 0.99 against the original, with rollout success recovering to 14&ndash;77% across all six architectures. Zeroing the visual pathway collapses every model to noise.</p>
+        </div>
+      </div>
+
+      <div class="finding-item">
+        <div class="finding-marker">2</div>
+        <div>
+          <h4>Motor Programs Bind to Absolute Spatial Coordinates</h4>
+          <p>Cross-task injection rebinds the trajectory, not the goal: &pi;0.5 99.6% (n=1,968), X-VLA 99.8% (n=3,150), OpenVLA-OFT 96.4% (n=1,079, tie-conditional), GR00T 57.0%, SmolVLA 52.1% on LIBERO. A norm-matched random-direction control yields 22%; a vision-only ACT controller produces 0.0% override by construction.</p>
+        </div>
+      </div>
+
+      <div class="finding-item">
+        <div class="finding-marker">3</div>
+        <div>
+          <h4>Language Becomes Necessary Only When Vision Is Ambiguous</h4>
+          <p>Linear probes recover prompt-category labels at &gt; 99% accuracy: the goal <em>is</em> encoded. Yet on visually unambiguous suites, replacing the prompt does almost nothing: across 11,226 counterfactual episodes, &pi;0.5 / LIBERO-Object yields F(4,3391)=1.23, p=0.247, &eta;&sup2;=0.0015. Language matters only when scenes are visually ambiguous.</p>
+        </div>
+      </div>
+
+      <div class="finding-item">
+        <div class="finding-marker">4</div>
+        <div>
+          <h4>Pathway Specialization &amp; Architecture-Tied SAE Structure</h4>
+          <p>In all three multi-pathway architectures (&pi;0.5, SmolVLA, GR00T), expert pathways encode HOW and VLM pathways encode WHAT. SmolVLA's expert carries 78.6% of cross-task override vs. 25.6% for the VLM. Single-feature ablation produces 28&ndash;92% zero-effect rates depending on architecture; SAE pooling preference is architecture-tied (per-token for &pi;0.5 / OFT, mean-pool for X-VLA, indifferent on SmolVLA).</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== RESULTS ===== -->
+<section class="section section-alt" id="results">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 section-title has-text-centered">Results</h2>
+
+    <div class="columns" style="margin-top: 2rem;">
+      <div class="column is-half">
+        <div class="figure-container">
+          <img src="./static/images/fig_cross_task_displacement.png" alt="Cross-task displacement override rates">
+          <p class="figure-caption">
+            Cross-task injection override rates. Pi0.5 99.6% (n=1,968) and X-VLA 99.8% (n=3,150) show near-complete source behavior transfer; OpenVLA-OFT 96.4% (n=1,079, tie-conditional; 77.9% tie-inclusive); GR00T 57.0%; SmolVLA 52.1% on LIBERO with strong pathway split (78.6% expert vs. 25.6% VLM). Vision-only ACT control: 0.0%.
+          </p>
+        </div>
+      </div>
+      <div class="column is-half">
+        <div class="figure-container">
+          <img src="./static/images/fig5_language.png" alt="Language ignored despite internal distinction">
+          <p class="figure-caption">
+            Language is encoded yet behaviorally ignored on visually unambiguous suites. &pi;0.5 / LIBERO-Object across 3,396 counterfactual episodes shows no significant behavioral difference (F(4,3391)=1.23, p=0.247, &eta;&sup2;=0.0015), even though layer-17 classifiers distinguish the same prompts at &gt; 99% accuracy.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="figure-container" style="margin-top: 1rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+      <img src="./static/images/fig_concept_ablation_cross_model.png" alt="Concept ablation causal sensitivity">
+      <p class="figure-caption has-text-centered">
+        Single-feature concept ablation across five language-capable VLAs. SmolVLA (480-dim expert) is the most sensitive at 28% zero-effect rate; OpenVLA-OFT (4096-dim) and X-VLA (1024-dim) are the most resilient at 92% and 82%. Causal sensitivity does not follow representation width; it is architecture-tied.
+      </p>
+    </div>
+
+    <!-- Width table -->
+    <h3 class="title is-5" style="margin-top: 2rem; color: var(--primary);">Causal sensitivity does not follow representation width</h3>
+    <table class="results-table">
+      <thead>
+        <tr>
+          <th>Model</th>
+          <th>Hidden Dim</th>
+          <th>Zero-Effect Rate</th>
+          <th>Destruction Rate</th>
+          <th>Profile</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>SmolVLA Expert</strong></td>
+          <td>480</td>
+          <td>28%</td>
+          <td>6.3%</td>
+          <td>Narrow, most sensitive</td>
+        </tr>
+        <tr>
+          <td><strong>Pi0.5 Expert</strong></td>
+          <td>1024</td>
+          <td>54%</td>
+          <td>14%</td>
+          <td>Bimodal, kill-switches at L8</td>
+        </tr>
+        <tr>
+          <td><strong>GR00T N1.5</strong></td>
+          <td>1536-2048</td>
+          <td>59%</td>
+          <td>9.1%</td>
+          <td>Pathway-dependent (DiT > Eagle)</td>
+        </tr>
+        <tr>
+          <td><strong>X-VLA</strong></td>
+          <td>1024</td>
+          <td>82%</td>
+          <td>2.7%</td>
+          <td>Resilient despite narrow width</td>
+        </tr>
+        <tr>
+          <td><strong>OpenVLA-OFT</strong></td>
+          <td>4096</td>
+          <td>92%</td>
+          <td>0.5%</td>
+          <td>Wide, most resilient</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Qualitative results -->
+    <div class="columns" style="margin-top: 2rem;">
+      <div class="column is-half">
+        <div class="figure-container">
+          <img src="./static/images/qualitative_put.png" alt="PUT concept ablation">
+          <p class="figure-caption">
+            PUT concept ablation (L8): &ldquo;Put the cream cheese in the bowl.&rdquo; Top: baseline picks up cream cheese and places it in the bowl (91 steps). Bottom: with PUT features zeroed, the robot drops the cream cheese into the bowl, knocking it over (300 steps, task failure).
+          </p>
+        </div>
+      </div>
+      <div class="column is-half">
+        <div class="figure-container">
+          <img src="./static/images/qualitative_open.png" alt="OPEN concept ablation">
+          <p class="figure-caption">
+            OPEN concept ablation (L8): &ldquo;Open the middle drawer of the cabinet.&rdquo; Top: baseline reaches for the middle drawer, grasps and pulls it open (140 steps). Bottom: with OPEN features zeroed, the robot opens the bottom drawer instead of the middle, misdirecting the motor program to the wrong target (300 steps, task failure).
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== MODELS ===== -->
+<section class="section" id="models">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 section-title has-text-centered">Models Studied</h2>
+    <p class="has-text-centered" style="color: var(--text-mid); margin-bottom: 2.5rem; margin-top: 1rem;">
+      Five VLAs and one language-free control, 80M to 7B parameters, three action generation paradigms
+    </p>
+
+    <div class="columns is-multiline">
+      <!-- Pi0.5 -->
+      <div class="column is-one-third">
+        <div class="model-card">
+          <div class="model-icon" style="background: linear-gradient(135deg, #c0392b, #e74c3c);">&#960;</div>
+          <div class="model-name">&pi;0.5</div>
+          <div class="model-params">3B parameters, cross-task override 99.6% (n=1,968)</div>
+          <div class="model-desc">PaliGemma VLM (SigLIP + Gemma 2.6B) with dedicated Gemma action expert (18L, 1024-dim). Flow matching with 50-step denoising and 50-step action chunking. Dual-pathway: VLM conditions expert.</div>
+          <span class="model-badge badge-primary">Flow Matching, Dual Pathway</span>
+        </div>
+      </div>
+      <!-- OpenVLA-OFT -->
+      <div class="column is-one-third">
+        <div class="model-card">
+          <div class="model-icon" style="background: linear-gradient(135deg, #6930c3, #5390d9);">V</div>
+          <div class="model-name">OpenVLA-OFT</div>
+          <div class="model-params">7B parameters, cross-task override 96.4% (tie-conditional)</div>
+          <div class="model-desc">Llama-2 7B with DINOv2 + SigLIP vision encoders. MLPResNet action head produces all 7 DOFs in one forward pass with 8-step chunking. Optimized Fine-Tuning via LoRA adapters preserves pretrained representation geometry.</div>
+          <span class="model-badge badge-primary">Continuous L1 Regression</span>
+        </div>
+      </div>
+      <!-- ACT (language-free control) -->
+      <div class="column is-one-third">
+        <div class="model-card">
+          <div class="model-icon" style="background: linear-gradient(135deg, #2d6a4f, #52b788);">A</div>
+          <div class="model-name">ACT</div>
+          <div class="model-params">80M parameters, cross-task override 0.0% (n=10)</div>
+          <div class="model-desc">ResNet encoder + transformer decoder. CVAE with action chunking for bimanual manipulation (TransferCube, Insertion). Vision-only by construction; cross-task injection is bit-identical to baseline. Serves as the non-VLA control.</div>
+          <span class="model-badge badge-warm">CVAE, Vision-only Control</span>
+        </div>
+      </div>
+      <!-- GR00T N1.5 -->
+      <div class="column is-one-third">
+        <div class="model-card">
+          <div class="model-icon" style="background: linear-gradient(135deg, #76b900, #43a047);">G</div>
+          <div class="model-name">GR00T N1.5</div>
+          <div class="model-params">3B parameters, cross-task override 57.0% (n=270)</div>
+          <div class="model-desc">NVIDIA's triple-pathway foundation model: 16 DiT layers, 12 Eagle LM layers, and 4 VL Self-Attention layers (32 total). DiT carries the motor signal: zeroing any DiT layer collapses every suite to 0%, while the four VL-SA layers tolerate ablation with 40 to 80% residual success.</div>
+          <span class="model-badge badge-green">Flow-Matching DiT, Triple Pathway</span>
+        </div>
+      </div>
+      <!-- SmolVLA -->
+      <div class="column is-one-third">
+        <div class="model-card">
+          <div class="model-icon" style="background: linear-gradient(135deg, #f77f00, #e36414);">S</div>
+          <div class="model-name">SmolVLA</div>
+          <div class="model-params">450M parameters, LIBERO 52.1%, MetaWorld 12.4%</div>
+          <div class="model-desc">Interleaved dual-pathway: 32 VLM layers (960-dim) and 32 expert layers (480-dim) execute in alternation. The interleaved fusion mechanically attenuates cross-task override (expert pathway 78.6% vs. VLM pathway 25.6% on LIBERO); we treat SmolVLA as a scoping case for the universality claim.</div>
+          <span class="model-badge badge-primary">Flow Matching, Interleaved</span>
+        </div>
+      </div>
+      <!-- X-VLA -->
+      <div class="column is-one-third">
+        <div class="model-card">
+          <div class="model-icon" style="background: linear-gradient(135deg, #ef476f, #d62828);">X</div>
+          <div class="model-name">X-VLA</div>
+          <div class="model-params">~1B parameters, cross-task override 99.8% (n=3,150)</div>
+          <div class="model-desc">Florence-2 VLM with soft-prompted flow-matching action head. Cross-embodiment design tested on LIBERO and SimplerEnv (WidowX + Google Robot). Override is reported under action-vector cosine; an EEF-velocity classifier yields 52.8% (both disclosed in the paper's limitations).</div>
+          <span class="model-badge badge-primary">Flow Matching + Soft Prompts</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Capability Radar -->
+    <div class="figure-container" style="margin-top: 2rem; max-width: 700px; margin-left: auto; margin-right: auto;">
+      <img src="./static/images/fig_spider_cross_model.png" alt="Cross-model capability radar">
+      <p class="figure-caption has-text-centered">
+        Cross-model capability radar. Five VLAs scored on baseline success, visual override strength, language sensitivity, SAE fidelity, cross-task transfer rate, and pathway specialization. OFT lacks pathway specialization (single-pathway architecture); SmolVLA and GR00T show the strongest pathway specialization alongside Pi0.5.
+      </p>
+    </div>
+
+    <!-- Benchmarks -->
+    <h3 class="title is-5" style="margin-top: 3rem; color: var(--primary); text-align: center;">Benchmarks</h3>
+    <div class="columns is-multiline" style="margin-top: 1rem;">
+      <div class="column is-one-quarter">
+        <div class="benchmark-card">
+          <h5 style="font-weight: 700; color: var(--primary); margin-bottom: 0.25rem;">LIBERO</h5>
+          <p style="color: var(--text-light); font-size: 0.82rem;">4 suites, 40 tasks<br>MuJoCo tabletop</p>
+        </div>
+      </div>
+      <div class="column is-one-quarter">
+        <div class="benchmark-card">
+          <h5 style="font-weight: 700; color: var(--primary); margin-bottom: 0.25rem;">SimplerEnv</h5>
+          <p style="color: var(--text-light); font-size: 0.82rem;">10 tasks, 2 embodiments<br>WidowX + Google Robot</p>
+        </div>
+      </div>
+      <div class="column is-one-quarter">
+        <div class="benchmark-card">
+          <h5 style="font-weight: 700; color: var(--primary); margin-bottom: 0.25rem;">ALOHA-sim</h5>
+          <p style="color: var(--text-light); font-size: 0.82rem;">Bimanual tasks<br>TransferCube, Insertion</p>
+        </div>
+      </div>
+      <div class="column is-one-quarter">
+        <div class="benchmark-card">
+          <h5 style="font-weight: 700; color: var(--primary); margin-bottom: 0.25rem;">MetaWorld</h5>
+          <p style="color: var(--text-light); font-size: 0.82rem;">50 manipulation tasks<br>Multi-task evaluation</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Per-model episode counts -->
+    <h3 class="title is-5" style="margin-top: 3rem; color: var(--primary); text-align: center;">Experimental Scale</h3>
+    <table class="results-table" style="margin-top: 1rem;">
+      <thead>
+        <tr>
+          <th>Model</th>
+          <th>Episodes</th>
+          <th>SAEs Trained</th>
+          <th>Concepts ID'd</th>
+          <th>Benchmark(s)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>&pi;0.5</strong></td>
+          <td>71,500+</td>
+          <td>72</td>
+          <td>43</td>
+          <td>LIBERO</td>
+        </tr>
+        <tr>
+          <td><strong>OpenVLA-OFT</strong></td>
+          <td>70,700+</td>
+          <td>96</td>
+          <td>45</td>
+          <td>LIBERO</td>
+        </tr>
+        <tr>
+          <td><strong>X-VLA</strong></td>
+          <td>50,000+</td>
+          <td>120</td>
+          <td>82</td>
+          <td>LIBERO, SimplerEnv</td>
+        </tr>
+        <tr>
+          <td><strong>SmolVLA</strong></td>
+          <td>58,000+</td>
+          <td>146</td>
+          <td>45</td>
+          <td>LIBERO, MetaWorld</td>
+        </tr>
+        <tr>
+          <td><strong>GR00T N1.5</strong></td>
+          <td>164,700+</td>
+          <td>87</td>
+          <td>36</td>
+          <td>LIBERO</td>
+        </tr>
+        <tr>
+          <td><strong>ACT</strong></td>
+          <td>1,870</td>
+          <td>-</td>
+          <td>-</td>
+          <td>ALOHA</td>
+        </tr>
+        <tr style="font-weight: 700; border-top: 2px solid var(--border);">
+          <td><strong>Total</strong></td>
+          <td><strong>420,000+</strong></td>
+          <td><strong>520+</strong></td>
+          <td><strong>79 unique</strong></td>
+          <td><strong>4 benchmarks</strong></td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+</section>
+
+<!-- ===== ACTION ATLAS ===== -->
+<section class="section section-alt" id="action-atlas">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 section-title has-text-centered">Action Atlas</h2>
+    <p class="has-text-centered" style="color: var(--text-mid); margin-bottom: 2.5rem; margin-top: 1rem;">
+      Interactive visualization platform for VLA interpretability, inspired by <a href="https://neuronpedia.org" target="_blank">Neuronpedia</a>
+    </p>
+
+    <div class="atlas-showcase">
+      <div class="columns">
+        <div class="column is-5">
+          <h3 style="font-weight: 700; font-size: 1.4rem; margin-bottom: 1.5rem;">Explore VLA Representations</h3>
+
+          <div class="atlas-feature">
+            <div class="atlas-feature-icon"><i class="fas fa-search"></i></div>
+            <div>
+              <h5>Feature Explorer</h5>
+              <p>UMAP scatter plots of 4,096+ SAE features with semantic search via SBERT embeddings</p>
+            </div>
+          </div>
+
+          <div class="atlas-feature">
+            <div class="atlas-feature-icon"><i class="fas fa-layer-group"></i></div>
+            <div>
+              <h5>Layer Wires</h5>
+              <p>Architecture diagrams showing information flow and concept density across transformer layers</p>
+            </div>
+          </div>
+
+          <div class="atlas-feature">
+            <div class="atlas-feature-icon"><i class="fas fa-video"></i></div>
+            <div>
+              <h5>Video Library</h5>
+              <p>308,000+  rollout videos filterable by model, suite, experiment type, and outcome</p>
+            </div>
+          </div>
+
+          <div class="atlas-feature">
+            <div class="atlas-feature-icon"><i class="fas fa-flask"></i></div>
+            <div>
+              <h5>Ablation Studies</h5>
+              <p>Side-by-side baseline vs. ablated behavior with success comparison</p>
+            </div>
+          </div>
+
+          <div class="atlas-feature">
+            <div class="atlas-feature-icon"><i class="fas fa-shield-alt"></i></div>
+            <div>
+              <h5>Perturbation Testing</h5>
+              <p>Vision perturbation results across models with displacement analysis and cross-embodiment data</p>
+            </div>
+          </div>
+
+          <div style="margin-top: 1.5rem;">
+            <a href="https://action-atlas.com" target="_blank" class="button is-medium is-rounded" style="background: white; color: var(--primary); font-weight: 700; border: none;">
+              <span class="icon"><i class="fas fa-external-link-alt"></i></span>
+              <span>Launch Action Atlas</span>
+            </a>
+            <p style="color: rgba(255,255,255,0.4); font-size: 0.82rem; margin-top: 0.5rem;">action-atlas.com</p>
+          </div>
+        </div>
+
+        <div class="column is-7">
+          <div class="atlas-gallery">
+            <div>
+              <img src="./static/images/atlas_features.png" alt="Action Atlas Feature Explorer">
+              <p class="atlas-img-label">Feature Explorer</p>
+            </div>
+            <div>
+              <img src="./static/images/atlas_wires.png" alt="Action Atlas Layer Wires">
+              <p class="atlas-img-label">Layer Circuits</p>
+            </div>
+            <div>
+              <img src="./static/images/atlas_ablation.png" alt="Action Atlas Ablation Studies">
+              <p class="atlas-img-label">Ablation Studies</p>
+            </div>
+            <div>
+              <img src="./static/images/atlas_demos.png" alt="Action Atlas Demo Videos">
+              <p class="atlas-img-label">Demo Videos</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer-custom">
+  <div class="container is-max-desktop">
+    <div class="columns">
+      <div class="column is-half">
+        <p style="font-weight: 600; color: white; margin-bottom: 0.5rem;">Not All Features Are Created Equal</p>
+        <p style="font-size: 0.9rem; color: rgba(255,255,255,0.55); font-style: italic;">
+          Anonymized for double-blind review
+        </p>
+      </div>
+      <div class="column is-half has-text-right">
+        <p style="margin-bottom: 0.5rem;">
+          <a href="https://action-atlas.com" target="_blank" style="margin-right: 1rem;">Action Atlas</a>
+          <a href="https://anonymous.4open.science/r/33987-EE4D" target="_blank">Codebase</a>
+        </p>
+        <p style="font-size: 0.8rem; color: rgba(255,255,255,0.4);">
+          Website template inspired by <a href="https://nerfies.github.io" target="_blank" style="color: rgba(255,255,255,0.5);">Nerfies</a>.
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ===== SCRIPTS ===== -->
+<script defer src="./static/js/fontawesome.all.min.js"></script>
+<script>
+  // Navbar burger toggle
+  document.addEventListener('DOMContentLoaded', () => {
+    const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+    if ($navbarBurgers.length > 0) {
+      $navbarBurgers.forEach(el => {
+        el.addEventListener('click', () => {
+          const target = el.dataset.target;
+          const $target = document.getElementById(target);
+          el.classList.toggle('is-active');
+          $target.classList.toggle('is-active');
+        });
+      });
+    }
+  });
+
+</script>
+
+</body>
+</html>

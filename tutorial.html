@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="Setup and Tutorial for Action Atlas: mechanistic interpretability for VLA models.">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Setup &amp; Tutorial | Action Atlas</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Google+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦾</text></svg>">
+</head>
+<body>
+
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation">
+  <div class="container">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="index.html" style="font-weight: 700; font-size: 1.1rem;">
+        Action Atlas
+      </a>
+      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="mainNavbar">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
+    <div id="mainNavbar" class="navbar-menu">
+      <div class="navbar-start">
+        <a class="navbar-item" href="index.html#abstract">Abstract</a>
+        <a class="navbar-item" href="index.html#findings">Key Findings</a>
+        <a class="navbar-item" href="index.html#results">Results</a>
+        <a class="navbar-item" href="index.html#models">Models</a>
+        <a class="navbar-item" href="index.html#action-atlas">Action Atlas</a>
+        <a class="navbar-item" href="tutorial.html" style="color: var(--accent-light) !important;">Setup &amp; Tutorial</a>
+      </div>
+      <div class="navbar-end">
+        <a class="navbar-item" href="https://action-atlas.com" target="_blank" style="color: var(--accent-light) !important;">
+          <span class="icon"><i class="fas fa-external-link-alt"></i></span>
+          <span>Live Demo</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== HEADER ===== -->
+<section class="hero is-medium hero-gradient" style="padding-top: 52px;">
+  <div class="hero-body">
+    <div class="container is-max-desktop has-text-centered">
+      <h1 class="title is-2 publication-title">Setup &amp; Tutorial</h1>
+      <h2 class="subtitle is-5" style="color: rgba(255,255,255,0.8); font-weight: 400;">
+        Get started with Action Atlas experiments and visualization
+      </h2>
+    </div>
+  </div>
+</section>
+
+<!-- ===== TABS ===== -->
+<section class="section" style="padding-top: 2rem;">
+  <div class="container is-max-desktop">
+
+    <div class="tabs-container" style="text-align: center;">
+      <button class="tab-btn active" onclick="switchTab('quickstart')">Quick Start</button>
+      <button class="tab-btn" onclick="switchTab('experiments')">Running Experiments</button>
+      <button class="tab-btn" onclick="switchTab('sae-pipeline')">SAE Pipeline</button>
+      <button class="tab-btn" onclick="switchTab('atlas-tutorial')">Action Atlas Viz</button>
+    </div>
+
+    <!-- ==================== QUICK START ==================== -->
+    <div id="tab-quickstart" class="tab-content active">
+      <div class="step-card">
+        <div class="step-number">1</div>
+        <div class="step-content">
+          <h4>Download the Codebase</h4>
+          <p>Download the anonymized repository (ZIP) from the link below, then extract it. The full codebase includes the LeRobot, LIBERO, and OpenVLA-OFT submodules required for the experiments.</p>
+          <div class="code-block">
+            <div class="code-block-header">
+              <span class="code-dot red"></span>
+              <span class="code-dot yellow"></span>
+              <span class="code-dot green"></span>
+            </div>
+<span class="comment"># Anonymous codebase (open in browser, download as ZIP):</span>
+<span class="string">https://anonymous.4open.science/r/33987-EE4D</span>
+
+<span class="command">unzip</span> 33987-EE4D.zip
+<span class="command">cd</span> 33987-EE4D
+          </div>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-number">2</div>
+        <div class="step-content">
+          <h4>Create Environment</h4>
+          <p>Set up a conda environment with Python 3.12 and install PyTorch with CUDA support.</p>
+          <div class="code-block">
+            <div class="code-block-header">
+              <span class="code-dot red"></span>
+              <span class="code-dot yellow"></span>
+              <span class="code-dot green"></span>
+            </div>
+<span class="command">conda create</span> <span class="flag">-y -n</span> actionatlas python=3.12
+<span class="command">conda activate</span> actionatlas
+<span class="command">pip install</span> torch torchvision <span class="flag">--index-url</span> <span class="string">https://download.pytorch.org/whl/cu128</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-number">3</div>
+        <div class="step-content">
+          <h4>Install Dependencies</h4>
+          <p>Install LeRobot (model policies for X-VLA, SmolVLA, GR00T, Pi0.5), LIBERO (environments), and project packages.</p>
+          <div class="code-block">
+            <div class="code-block-header">
+              <span class="code-dot red"></span>
+              <span class="code-dot yellow"></span>
+              <span class="code-dot green"></span>
+            </div>
+<span class="command">cd</span> lerobot && <span class="command">pip install</span> <span class="flag">-e</span> <span class="string">".[pi]"</span> && <span class="command">cd</span> ..
+<span class="command">cd</span> LIBERO && <span class="command">pip install</span> <span class="flag">-e</span> . && <span class="command">cd</span> ..
+<span class="command">pip install</span> <span class="flag">-e</span> .
+          </div>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-number">4</div>
+        <div class="step-content">
+          <h4>Verify Installation</h4>
+          <p>Check that all model policies and LIBERO are available.</p>
+          <div class="code-block">
+            <div class="code-block-header">
+              <span class="code-dot red"></span>
+              <span class="code-dot yellow"></span>
+              <span class="code-dot green"></span>
+            </div>
+<span class="command">python</span> <span class="flag">-c</span> <span class="string">"from lerobot.policies.xvla.modeling_xvla import XVLAPolicy; print('X-VLA OK')"</span>
+<span class="command">python</span> <span class="flag">-c</span> <span class="string">"from lerobot.policies.smolvla.modeling_smolvla import SmolVLAPolicy; print('SmolVLA OK')"</span>
+<span class="command">python</span> <span class="flag">-c</span> <span class="string">"from lerobot.policies.pi05.modeling_pi05 import PI05Policy; print('Pi0.5 OK')"</span>
+<span class="command">python</span> <span class="flag">-c</span> <span class="string">"import libero; print('LIBERO OK')"</span>
+<span class="command">python</span> experiments/grid_ablation.py <span class="flag">--help</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== RUNNING EXPERIMENTS ==================== -->
+    <div id="tab-experiments" class="tab-content">
+      <h3 class="title is-5" style="color: var(--primary);">Running Experiments</h3>
+      <p style="color: var(--text-mid); margin-bottom: 1.5rem;">
+        All experiments use a unified CLI. Swap <code>--model</code> to run on any supported VLA.
+      </p>
+
+      <div class="step-card">
+        <div class="step-number">1</div>
+        <div class="step-content">
+          <h4>Grid Ablation</h4>
+          <p>Zero each layer one at a time and measure task success rate to find critical components.</p>
+          <div class="code-block">
+            <div class="code-block-header">
+              <span class="code-dot red"></span>
+              <span class="code-dot yellow"></span>
+              <span class="code-dot green"></span>
+            </div>
+<span class="command">python</span> experiments/grid_ablation.py \
+    <span class="flag">--model</span> xvla <span class="flag">--suite</span> libero_object <span class="flag">--n-episodes</span> 3 <span class="flag">--gpu</span> 0
+          </div>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-number">2</div>
+        <div class="step-content">
+          <h4>Vision Perturbation</h4>
+          <p>Apply 24 image corruptions (noise, blur, color, spatial, extreme) and measure robustness.</p>
+          <div class="code-block">
+            <div class="code-block-header">
+              <span class="code-dot red"></span>
+              <span class="code-dot yellow"></span>
+              <span class="code-dot green"></span>
+            </div>
+<span class="command">python</span> experiments/vision_perturbation.py \
+    <span class="flag">--model</span> smolvla <span class="flag">--suite</span> libero_goal <span class="flag">--gpu</span> 1
+          </div>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-number">3</div>
+        <div class="step-content">
+          <h4>Counterfactual Prompting</h4>
+          <p>Test how models respond to null, negated, or wrong language instructions.</p>
+          <div class="code-block">
+            <div class="code-block-header">
+              <span class="code-dot red"></span>
+              <span class="code-dot yellow"></span>
+              <span class="code-dot green"></span>
+            </div>
+<span class="command">python</span> experiments/counterfactual.py \
+    <span class="flag">--model</span> pi05 <span class="flag">--suite</span> libero_spatial <span class="flag">--gpu</span> 2
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ==================== SAE PIPELINE ==================== -->
+    <div id="tab-sae-pipeline" class="tab-content">
+      <h3 class="title is-5" style="color: var(--primary);">SAE Interpretability Pipeline</h3>
+      <p style="color: var(--text-mid); margin-bottom: 1.5rem;">
+        The full pipeline: collect activations, train SAEs, identify concepts, then verify causality.
+      </p>
+
+      <div class="step-card">
+        <div class="step-number">1</div>
+        <div class="step-content">
+          <h4>Collect Activations</h4>
+          <p>Run baseline episodes and capture per-layer activations for SAE training.</p>
+          <div class="code-block">
+            <div class="code-block-header">
+              <span class="code-dot red"></span>
+              <span class="code-dot yellow"></span>
+              <span class="code-dot green"></span>
+            </div>
+<span class="command">python</span> experiments/baseline.py \
+    <span class="flag">--model</span> xvla <span class="flag">--suite</span> libero_object \
+    <span class="flag">--collect-activations</span> <span class="flag">--n-episodes</span> 3
+          </div>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-number">2</div>
+        <div class="step-content">
+          <h4>Train TopK SAEs</h4>
+          <p>Train sparse autoencoders on collected activations (8x expansion, k=64).</p>
+          <div class="code-block">
+            <div class="code-block-header">
+              <span class="code-dot red"></span>
+              <span class="code-dot yellow"></span>
+              <span class="code-dot green"></span>
+            </div>
+<span class="command">python</span> experiments/train_sae.py \
+    <span class="flag">--activations-dir</span> outputs/xvla_experiments/baseline_libero_object/activations \
+    <span class="flag">--output-dir</span> outputs/xvla_saes/libero_object
+          </div>
+          <div class="info-box warning">
+            <div class="info-box-icon">&#9888;&#65039;</div>
+            <div>
+              Always use per-token SAEs. Mean-pooled SAEs cause severe task failure despite high reconstruction quality.
+              Set <code>TORCH_COMPILE_DISABLE=1</code> for all experiment scripts.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-number">3</div>
+        <div class="step-content">
+          <h4>Concept Identification</h4>
+          <p>Score features using Cohen's d to find task-selective SAE features.</p>
+          <div class="code-block">
+            <div class="code-block-header">
+              <span class="code-dot red"></span>
+              <span class="code-dot yellow"></span>
+              <span class="code-dot green"></span>
+            </div>
+<span class="command">python</span> experiments/concept_id.py \
+    <span class="flag">--sae-dir</span> outputs/xvla_saes/libero_object \
+    <span class="flag">--activations-dir</span> outputs/xvla_experiments/baseline_libero_object/activations \
+    <span class="flag">--suite</span> libero_object
+          </div>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-number">4</div>
+        <div class="step-content">
+          <h4>Concept Ablation &amp; Steering</h4>
+          <p>Remove or amplify specific concept features during live rollouts to verify causality.</p>
+          <div class="code-block">
+            <div class="code-block-header">
+              <span class="code-dot red"></span>
+              <span class="code-dot yellow"></span>
+              <span class="code-dot green"></span>
+            </div>
+<span class="comment"># Ablation: remove features and measure impact</span>
+<span class="command">python</span> experiments/concept_ablation.py \
+    <span class="flag">--model</span> xvla <span class="flag">--suite</span> libero_object \
+    <span class="flag">--sae-dir</span> outputs/xvla_saes/libero_object \
+    <span class="flag">--concept-results</span> results/concept_id/libero_object/all_layers.json \
+    <span class="flag">--layer</span> transformer_L12
+
+<span class="comment"># Steering: amplify or suppress features</span>
+<span class="command">python</span> experiments/concept_steering.py \
+    <span class="flag">--model</span> xvla <span class="flag">--layer</span> transformer_L12 \
+    <span class="flag">--strengths</span> -2.0 -1.0 1.0 2.0
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== ACTION ATLAS TUTORIAL ==================== -->
+    <div id="tab-atlas-tutorial" class="tab-content">
+      <h3 class="title is-5" style="color: var(--primary);">Running Action Atlas Locally</h3>
+      <p style="color: var(--text-mid); margin-bottom: 1.5rem;">
+        Action Atlas is deployed at <a href="https://action-atlas.com" target="_blank">action-atlas.com</a>, but you can also run it locally to explore your own experiment data.
+      </p>
+
+      <div class="step-card">
+        <div class="step-number">1</div>
+        <div class="step-content">
+          <h4>Install Visualization Dependencies</h4>
+          <div class="code-block">
+            <div class="code-block-header">
+              <span class="code-dot red"></span>
+              <span class="code-dot yellow"></span>
+              <span class="code-dot green"></span>
+            </div>
+<span class="command">pip install</span> flask flask-cors
+          </div>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-number">2</div>
+        <div class="step-content">
+          <h4>Start the Backend</h4>
+          <p>The Flask backend serves experiment data through a REST API.</p>
+          <div class="code-block">
+            <div class="code-block-header">
+              <span class="code-dot red"></span>
+              <span class="code-dot yellow"></span>
+              <span class="code-dot green"></span>
+            </div>
+<span class="command">cd</span> action_atlas/backend
+<span class="command">python</span> run.py <span class="flag">--port</span> 6006
+          </div>
+        </div>
+      </div>
+
+      <div class="step-card">
+        <div class="step-number">3</div>
+        <div class="step-content">
+          <h4>Start the Frontend</h4>
+          <p>The Next.js frontend provides the interactive visualization interface.</p>
+          <div class="code-block">
+            <div class="code-block-header">
+              <span class="code-dot red"></span>
+              <span class="code-dot yellow"></span>
+              <span class="code-dot green"></span>
+            </div>
+<span class="command">cd</span> action_atlas/frontend
+<span class="command">npm install</span>
+<span class="command">echo</span> <span class="string">"NEXT_PUBLIC_API_URL=http://localhost:6006"</span> > .env.local
+<span class="command">npm run</span> dev
+          </div>
+          <p style="margin-top: 0.75rem; color: var(--text-mid);">
+            Open <strong>http://localhost:3002</strong> to access Action Atlas locally.
+          </p>
+        </div>
+      </div>
+
+      <h3 class="title is-5" style="margin-top: 2.5rem; color: var(--primary);">Using Your Own Data</h3>
+      <p style="color: var(--text-mid); margin-bottom: 1rem;">
+        Point Action Atlas at your experiment outputs by setting environment variables:
+      </p>
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-dot red"></span>
+          <span class="code-dot yellow"></span>
+          <span class="code-dot green"></span>
+        </div>
+<span class="command">export</span> XVLA_ROLLOUTS_DIR=/path/to/your/xvla/data
+<span class="command">export</span> SMOLVLA_ROLLOUTS_DIR=/path/to/your/smolvla/data
+<span class="command">export</span> GROOT_ROLLOUTS_DIR=/path/to/your/groot/data
+      </div>
+
+      <h3 class="title is-5" style="margin-top: 2.5rem; color: var(--primary);">Platform Features</h3>
+
+      <div class="columns is-multiline" style="margin-top: 1rem;">
+        <div class="column is-half">
+          <div class="content-card">
+            <h5 style="color: var(--primary); font-weight: 700;"><i class="fas fa-search" style="color: var(--accent); margin-right: 8px;"></i>Feature Explorer</h5>
+            <p style="color: var(--text-mid); font-size: 0.9rem;">Browse UMAP scatter plots of SAE features, search by concept, and inspect individual feature activations across layers and suites.</p>
+          </div>
+        </div>
+        <div class="column is-half">
+          <div class="content-card">
+            <h5 style="color: var(--primary); font-weight: 700;"><i class="fas fa-layer-group" style="color: var(--accent); margin-right: 8px;"></i>Cross-Model Comparison</h5>
+            <p style="color: var(--text-mid); font-size: 0.9rem;">Compare layer criticality, concept representations, and robustness across X-VLA, SmolVLA, GR00T, Pi0.5, and OpenVLA-OFT.</p>
+          </div>
+        </div>
+        <div class="column is-half">
+          <div class="content-card">
+            <h5 style="color: var(--primary); font-weight: 700;"><i class="fas fa-flask" style="color: var(--accent); margin-right: 8px;"></i>Ablation Studies</h5>
+            <p style="color: var(--text-mid); font-size: 0.9rem;">Compare baseline vs. ablated behavior, view success rate deltas per concept, and explore layer-phase ablation matrices.</p>
+          </div>
+        </div>
+        <div class="column is-half">
+          <div class="content-card">
+            <h5 style="color: var(--primary); font-weight: 700;"><i class="fas fa-shield-alt" style="color: var(--accent); margin-right: 8px;"></i>Perturbation Testing</h5>
+            <p style="color: var(--text-mid); font-size: 0.9rem;">Explore vision perturbation robustness results across 24 perturbation types and all supported models.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer-custom">
+  <div class="container is-max-desktop">
+    <div class="columns">
+      <div class="column is-half">
+        <p style="font-weight: 600; color: white; margin-bottom: 0.5rem;">Not All Features Are Created Equal</p>
+        <p style="font-size: 0.9rem; color: rgba(255,255,255,0.55); font-style: italic;">Anonymized for double-blind review</p>
+      </div>
+      <div class="column is-half has-text-right">
+        <p style="margin-bottom: 0.5rem;">
+          <a href="index.html" style="margin-right: 1rem;">Home</a>
+          <a href="https://action-atlas.com" target="_blank" style="margin-right: 1rem;">Action Atlas</a>
+          <a href="https://anonymous.4open.science/r/33987-EE4D" target="_blank">Codebase</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ===== SCRIPTS ===== -->
+<script defer src="./static/js/fontawesome.all.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+    if ($navbarBurgers.length > 0) {
+      $navbarBurgers.forEach(el => {
+        el.addEventListener('click', () => {
+          const target = el.dataset.target;
+          const $target = document.getElementById(target);
+          el.classList.toggle('is-active');
+          $target.classList.toggle('is-active');
+        });
+      });
+    }
+  });
+
+  function switchTab(tabId) {
+    document.querySelectorAll('.tab-content').forEach(tab => {
+      tab.classList.remove('active');
+    });
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.classList.remove('active');
+    });
+    document.getElementById('tab-' + tabId).classList.add('active');
+    event.target.classList.add('active');
+  }
+</script>
+
+</body>
+</html>
